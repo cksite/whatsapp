@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import "./form.css"
 
 const Form = () => {
   const [formData, setFormData] = useState({
     name: "",
     age: "",
     email: "",
-    phone: "",
+    phone: "+91", // Default prefix
     address: "",
     symptoms: "",
   });
@@ -17,26 +18,37 @@ const Form = () => {
     });
   };
 
+  const handleFocusPhone = () => {
+    if (!formData.phone.startsWith("+91")) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: "+91" + prev.phone,
+      }));
+    }
+  };
+
   const handleSendMessage = () => {
     const { name, age, email, phone, address, symptoms } = formData;
 
     // Validation
-    if (!phone) {
-      alert("Please enter a phone number!");
+    if (!phone || phone === "+91") {
+      alert("Please enter a valid phone number!");
       return;
     }
 
     const message = `
       Hello! Here are the details submitted:
-      - Name: ${name}
-      - Age: ${age}
-      - Email: ${email}
-      - Phone: ${phone}
-      - Address: ${address}
-      - Symptoms: ${symptoms}
+      Name: ${name}
+      Age: ${age}
+      Email: ${email}
+      Phone: ${phone}
+      Address: ${address}
+      Symptoms: ${symptoms}
     `;
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
+    const whatsappUrl = `https://wa.me/${phone.replace("+", "")}?text=${encodeURIComponent(
+      message
+    )}`;
     window.open(whatsappUrl, "_blank"); // Open WhatsApp with the message
   };
 
@@ -83,7 +95,8 @@ const Form = () => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          placeholder="Enter phone number (with country code)"
+          onFocus={handleFocusPhone}
+          placeholder="Enter phone number"
           style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
         />
       </div>
